@@ -11,4 +11,9 @@ class Juncao{
         })
         World.add(engine.world,this.ligacao);
     }
+    desfazer(){
+        World.remove(engine.world,this.ligacao);
+    }
+        
+    
 }
