@@ -16,11 +16,25 @@ var ligacao;
 var fundo, melancia, coelhoimg;
 var coelhoS;
 var botao;
+var piscando;
+var comendo;
+var triste;
 
 function preload(){
   fundo = loadImage("background.png");
   melancia = loadImage("melon.png");
   coelhoimg = loadImage("Rabbit-01.png");
+  piscando = loadAnimation("blink_1.png","blink_2.png","blink_3.png");
+  comendo = loadAnimation("eat_0.png","eat_1.png","eat_2.png","eat_3.png","eat_4.png");
+  triste = loadAnimation("sad_1.png","sad_2.png","sad_3.png");
+
+  piscando.playing = true;
+  comendo.playing = true;
+  triste.playing = true;
+
+  piscando.looping = true;
+  comendo.looping = false;
+  triste.looping = false;
 }
 
 function setup() 
@@ -28,6 +42,9 @@ function setup()
   createCanvas(500,700);
   engine = Engine.create();
   world = engine.world;
+
+  piscando.frameDelay = 15;
+  comendo.frameDelay = 15;
  
   rectMode(CENTER);
   ellipseMode(RADIUS);
@@ -42,6 +59,10 @@ function setup()
   coelhoS = createSprite(250,630,100,100);
   coelhoS.addImage(coelhoimg);
   coelhoS.scale = 0.2;
+  coelhoS.addAnimation("piscando", piscando);
+  coelhoS.addAnimation("comendo", comendo);
+  coelhoS.addAnimation("triste",triste);
+  coelhoS.changeAnimation("piscando");
   botao = createImg("cut_btn.png");
   botao.position(220,30);
   botao.size(50,50);
@@ -55,7 +76,16 @@ function draw() {
   Engine.update(engine);
   chao.dChao();
   corda.dCorda();
-  image(melancia,fruta.position.x,fruta.position.y,70,70);
+  if(fruta!==null){
+    image(melancia,fruta.position.x,fruta.position.y,70,70);
+  }
+ if(dColisao(fruta,coelhoS)===true){
+  coelhoS.changeAnimation("comendo");
+ }
+ if(fruta!==null&&fruta.position.y>=650){
+  coelhoS.changeAnimation("triste");
+  fruta=null;
+ }
   drawSprites();
 }
 
@@ -65,4 +95,16 @@ function cortar(){
   ligacao = null;
 }
 
-
+function dColisao(corpo,sprite){
+  if(corpo!==null){
+    var distancia = dist(corpo.position.x,corpo.position.y,sprite.position.x,sprite.position.y);
+    if(distancia<=80){
+      World.remove(engine.world,fruta);
+      fruta=null;
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+}
