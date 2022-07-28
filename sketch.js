@@ -132,7 +132,7 @@ function dColisao(corpo,sprite){
 }
 
 function sopro(){
-  Matter.Body.applyForce(fruta,{x:0,y:0},{X:0.01,y:0});
+  Matter.Body.applyForce(fruta,{x:0,y:0},{x:0.01,y:0});
   arS.play();
 }
 
