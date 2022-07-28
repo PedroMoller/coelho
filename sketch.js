@@ -19,6 +19,9 @@ var botao;
 var piscando;
 var comendo;
 var triste;
+var fundoS, cortaS, tristeS, comendoS, arS;
+var balao;
+var mutar
 
 function preload(){
   fundo = loadImage("background.png");
@@ -27,6 +30,11 @@ function preload(){
   piscando = loadAnimation("blink_1.png","blink_2.png","blink_3.png");
   comendo = loadAnimation("eat_0.png","eat_1.png","eat_2.png","eat_3.png","eat_4.png");
   triste = loadAnimation("sad_1.png","sad_2.png","sad_3.png");
+  fundoS = loadSound("sound1.mp3");
+  cortaS = loadSound("rope_cut.mp3");
+  tristeS = loadSound("sad.wav");
+  comendoS = loadSound("eating_sound.mp3");
+  arS = loadSound("air.wav");
 
   piscando.playing = true;
   comendo.playing = true;
@@ -56,7 +64,7 @@ function setup()
   fruta = Bodies.circle(300,300,15);
   Matter.Composite.add(corda.body,fruta);
   ligacao = new Juncao(corda,fruta);
-  coelhoS = createSprite(250,630,100,100);
+  coelhoS = createSprite(420,630,100,100);
   coelhoS.addImage(coelhoimg);
   coelhoS.scale = 0.2;
   coelhoS.addAnimation("piscando", piscando);
@@ -67,6 +75,16 @@ function setup()
   botao.position(220,30);
   botao.size(50,50);
   botao.mouseClicked(cortar);
+  balao = createImg("balloon.png");
+  balao.position(10,200);
+  balao.size(150,100);
+  balao.mouseClicked(sopro);
+  fundoS.play();
+  fundoS.setVolume(0.5);
+  mutar = createImg("mute.png");
+  mutar.position(450,20);
+  mutar.size(50,50);
+  mutar.mouseClicked(mute);
 }
 
 function draw() {
@@ -81,15 +99,19 @@ function draw() {
   }
  if(dColisao(fruta,coelhoS)===true){
   coelhoS.changeAnimation("comendo");
+  comendoS.play();
  }
  if(fruta!==null&&fruta.position.y>=650){
   coelhoS.changeAnimation("triste");
   fruta=null;
+  fundoS.stop();
+  tristeS.play();
  }
   drawSprites();
 }
 
 function cortar(){
+  cortaS.play();
   corda.break();
   ligacao.desfazer();
   ligacao = null;
@@ -106,5 +128,19 @@ function dColisao(corpo,sprite){
     else{
       return false;
     }
+  }
+}
+
+function sopro(){
+  Matter.Body.applyForce(fruta,{x:0,y:0},{X:0.01,y:0});
+  arS.play();
+}
+
+function mute(){
+  if(fundoS.isPlaying()){
+    fundoS.stop();
+  }
+  else{
+    fundoS.play();
   }
 }
